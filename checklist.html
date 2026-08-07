@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>European Summer 2026 — Booking Checklist</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #1a1612;
+    --parchment: #f7f4ef;
+    --gold: #b8924a;
+    --gold-light: #e8d5b0;
+    --rust: #8b4a2f;
+    --stone: #8a8278;
+    --divider: #d9d2c5;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  /* POPUP MODAL */
+  .modal-overlay {
+    display:none;position:fixed;inset:0;background:rgba(26,22,18,0.78);
+    z-index:2000;align-items:center;justify-content:center;padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-box{
+    background:#f7f4ef;border-radius:4px;max-width:560px;width:100%;
+    max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.45);position:relative;
+  }
+  .modal-header{
+    background:#1a1612;color:#e8d5b0;padding:20px 52px 16px 24px;
+    position:sticky;top:0;z-index:1;
+  }
+  .modal-header h2{
+    font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:400;line-height:1.3;
+  }
+  .modal-close{
+    position:absolute;top:14px;right:16px;background:none;border:none;
+    color:#e8d5b0;font-size:22px;cursor:pointer;padding:4px 8px;line-height:1;
+  }
+  .modal-close:hover{color:white;}
+  .modal-body{padding:18px 24px 28px;}
+  .modal-row{
+    display:grid;grid-template-columns:24px 84px 1fr;gap:8px;padding:9px 0;
+    border-bottom:1px solid #d9d2c5;font-size:12.5px;color:#3a3530;line-height:1.6;
+  }
+  .modal-row:last-of-type{border-bottom:none;}
+  .modal-icon{text-align:center;}
+  .modal-label{font-weight:500;color:#1a1612;}
+  .modal-tip{
+    background:#f0ede8;border-left:3px solid #b8924a;padding:10px 14px;margin-top:14px;
+    font-size:12px;color:#5a5048;line-height:1.65;border-radius:0 2px 2px 0;
+  }
+  .modal-links{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;}
+  .modal-link{
+    background:#1a1612;color:#e8d5b0;font-size:10.5px;letter-spacing:0.1em;
+    text-transform:uppercase;padding:7px 14px;border-radius:2px;text-decoration:none;
+  }
+  .modal-link:hover{background:#b8924a;color:white;}
+  .event-body[data-popup]{cursor:pointer;border-radius:3px;transition:background 0.15s;}
+  .event-body[data-popup]:hover{background:rgba(184,146,74,0.09);}
+  .event-body[data-popup] .event-title::after{
+    content:' ⓘ';font-size:10px;color:#b8924a;opacity:0.75;vertical-align:super;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--parchment);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  header {
+    background: var(--ink);
+    color: var(--parchment);
+    text-align: center;
+    padding: 60px 24px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(184,146,74,0.04) 40px,rgba(184,146,74,0.04) 41px);
+  }
+  .trip-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    position: relative;
+  }
+  header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(38px, 7vw, 68px);
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+    position: relative;
+  }
+  header h1 em { font-style: italic; color: var(--gold-light); }
+  .trip-dates {
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    color: var(--stone);
+    margin-top: 18px;
+    position: relative;
+  }
+  .passengers {
+    font-size: 12px;
+    color: var(--gold-light);
+    margin-top: 8px;
+    position: relative;
+    letter-spacing: 0.06em;
+  }
+  .route-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 28px;
+    position: relative;
+    z-index: 100;
+  }
+  .sticky-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #1a1612;
+    padding: 10px 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    z-index: 999;
+    display: none;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+  }
+  .sticky-nav.visible {
+    display: flex;
+  }
+  .sticky-nav .pill {
+    font-size: 10px;
+    padding: 4px 10px;
+  }
+  .pill {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(184,146,74,0.3);
+    color: var(--gold-light);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 2px;
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .pill:hover {
+    background: rgba(184,146,74,0.2);
+    border-color: rgba(184,146,74,0.7);
+    color: white;
+  }
+
+  main { max-width: 780px; margin: 0 auto; padding: 0 20px 80px; }
+
+  .country-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 48px 0 8px;
+  }
+  .country-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+  .country-line { flex: 1; height: 1px; background: var(--divider); }
+
+  .day {
+    border-left: 2px solid var(--divider);
+    margin-left: 12px;
+    padding: 0 0 4px 28px;
+    position: relative;
+  }
+  .day::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 22px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+  .day-header {
+    padding: 28px 0 12px;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .day-label { font-size: 10px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--stone); }
+  .day-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--ink); }
+  .day-date { font-size: 12px; color: var(--stone); letter-spacing: 0.06em; }
+
+  .events { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
+
+  .event { display: grid; grid-template-columns: 72px 1fr; gap: 12px; align-items: start; }
+  .event-time { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; color: var(--gold); padding-top: 2px; text-align: right; }
+  .event-title { font-size: 14px; font-weight: 400; color: var(--ink); line-height: 1.4; }
+  .event-detail { font-size: 12px; color: var(--stone); margin-top: 2px; line-height: 1.5; }
+
+  .tag { display: inline-block; font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; padding: 2px 7px; border-radius: 2px; margin-left: 6px; vertical-align: middle; }
+  .tag-travel { background: #e8f0fb; color: #3a5f99; }
+  .tag-faith  { background: #f0ebe8; color: var(--rust); }
+  .tag-food   { background: #f0f4e8; color: #4a6b30; }
+  .tag-hotel  { background: var(--gold-light); color: #7a5c20; }
+  .tag-special { background: #1a1612; color: var(--gold-light); }
+
+  .hotel-banner {
+    background: white;
+    border: 1px solid var(--divider);
+    border-left: 3px solid var(--gold);
+    padding: 10px 14px;
+    margin: 14px 0 4px;
+    border-radius: 0 2px 2px 0;
+  }
+  .hotel-banner .hotel-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .hotel-banner .hotel-conf { font-size: 11px; color: var(--stone); margin-top: 2px; letter-spacing: 0.04em; }
+
+  .drive-strip {
+    background: #f0ede8;
+    border: 1px dashed var(--divider);
+    border-radius: 2px;
+    padding: 8px 14px;
+    margin: 10px 0;
+    font-size: 12px;
+    color: var(--stone);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .drive-strip::before { content: '🚗'; font-size: 14px; }
+
+  .flight-strip {
+    background: #edf2fb;
+    border: 1px dashed #c5d4ee;
+    border-radius: 2px;
+    padding: 8px 14px;
+    margin: 10px 0;
+    font-size: 12px;
+    color: #3a5f99;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .flight-strip::before { content: '✈️'; font-size: 14px; }
+
+  .callout {
+    background: var(--ink);
+    color: var(--gold-light);
+    padding: 14px 18px;
+    border-radius: 2px;
+    margin: 14px 0 4px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .callout strong { color: white; display: block; font-size: 15px; margin-bottom: 4px; font-family: 'Cormorant Garamond', serif; font-weight: 600; }
+
+  .warning-strip {
+    background: #fdf3e8;
+    border: 1px solid #f0c070;
+    border-radius: 2px;
+    padding: 8px 14px;
+    margin: 10px 0;
+    font-size: 12px;
+    color: #7a5010;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .warning-strip::before { content: '⚠️'; font-size: 14px; flex-shrink: 0; }
+
+  footer {
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 11px;
+    color: var(--stone);
+    letter-spacing: 0.1em;
+    border-top: 1px solid var(--divider);
+    margin-top: 40px;
+  }
+
+  @media (max-width: 500px) {
+    .event { grid-template-columns: 56px 1fr; }
+    .event-time { font-size: 10px; }
+  }
+
+  /* ── PURE CSS MODALS — works in any browser, no JS needed ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(26,22,18,0.8);
+    z-index: 2000;
+    align-items: flex-start; justify-content: center;
+    padding: 40px 20px; overflow-y: auto;
+  }
+  .modal-overlay:target { display: flex; }
+  .modal-box {
+    background: #f7f4ef; border-radius: 4px;
+    max-width: 560px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    position: relative; margin: auto;
+  }
+  .modal-header {
+    background: #1a1612; color: #e8d5b0;
+    padding: 20px 52px 16px 24px;
+    border-radius: 4px 4px 0 0;
+  }
+  .modal-header h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px; font-weight: 400; line-height: 1.3;
+  }
+  .modal-close {
+    position: absolute; top: 14px; right: 16px;
+    color: #e8d5b0; font-size: 22px;
+    text-decoration: none; line-height: 1; padding: 4px 8px;
+  }
+  .modal-close:hover { color: white; }
+  .modal-body { padding: 16px 22px 26px; }
+  .mr {
+    display: grid; grid-template-columns: 24px 84px 1fr;
+    gap: 8px; padding: 8px 0; border-bottom: 1px solid #d9d2c5;
+    font-size: 12.5px; color: #3a3530; line-height: 1.6;
+  }
+  .mr:last-of-type { border-bottom: none; }
+  .mi { text-align: center; font-size: 14px; }
+  .mlb { font-weight: 500; color: #1a1612; }
+  .mv { }
+  .mh { border-top: 1px solid #d9d2c5; margin-top: 12px; padding-top: 12px; }
+  .mhl {
+    font-size: 9px; font-weight: 500; letter-spacing: 0.18em;
+    text-transform: uppercase; color: #b8924a; margin-bottom: 7px;
+  }
+  .mht { font-size: 12.5px; color: #3a3530; line-height: 1.8; }
+  .mt {
+    background: #f0ede8; border-left: 3px solid #b8924a;
+    padding: 10px 14px; margin-top: 12px; font-size: 12px;
+    color: #5a5048; line-height: 1.65; border-radius: 0 2px 2px 0;
+  }
+  .mlinks { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .ml-link {
+    background: #1a1612; color: #e8d5b0; font-size: 10.5px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 7px 14px; border-radius: 2px; text-decoration: none;
+  }
+  .ml-link:hover { background: #b8924a; color: white; }
+  /* Popup trigger icon */
+  .popup-trigger {
+    display: inline-block; font-size: 10px; color: #b8924a;
+    text-decoration: none; opacity: 0.8; vertical-align: super; margin-left: 3px;
+  }
+  .popup-trigger:hover { opacity: 1; }
+  /* Clickable row hover */
+  .event-body[data-pid] { cursor: pointer; border-radius: 3px; transition: background 0.15s; }
+  .event-body[data-pid]:hover { background: rgba(184,146,74,0.09); }
+
+
+  /* ── LOURDES MAP ── */
+  .lourdes-map {
+    background: #f7f4ef;
+    border: 1px solid #d9d2c5;
+    border-radius: 6px;
+    padding: 18px;
+    margin: 18px 0;
+  }
+  .map-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+    color: #1a1612;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .map-svg {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    background: #f0ece3;
+    display: block;
+  }
+  .map-legend {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin-top: 14px;
+  }
+  @media (min-width: 640px) {
+    .map-legend { grid-template-columns: 1fr 1fr; }
+  }
+  .map-leg-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #3a3530;
+    line-height: 1.4;
+  }
+  .leg-num {
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 11px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .map-leg-item em { color: #b8924a; font-style: italic; }
+  .map-note {
+    font-size: 10.5px;
+    color: #8a8268;
+    margin-top: 12px;
+    text-align: center;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+
+  .maplink-btn {
+    display: inline-block;
+    background: #1a1612;
+    color: #e8d5b0;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    padding: 9px 16px;
+    border-radius: 3px;
+    text-decoration: none;
+    margin: 4px 0 16px;
+  }
+  .maplink-btn:hover { background: #b8924a; color: #fff; }
+
+
+  /* ── ACTION & BOOKING CHECKLIST ── */
+  .checklist-section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 28px 20px 8px;
+  }
+  .checklist-header { text-align: center; margin-bottom: 22px; }
+  .checklist-header h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px; font-weight: 600; color: #1a1612;
+  }
+  .checklist-header p {
+    font-size: 13px; color: #5a5048; line-height: 1.6;
+    max-width: 640px; margin: 8px auto 0;
+  }
+  .cl-group {
+    background: #f7f4ef;
+    border: 1px solid #e0d8c8;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+  .cl-group h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 700; letter-spacing: 0.02em;
+    margin-bottom: 12px; padding-bottom: 8px;
+    border-bottom: 1px solid #e0d8c8; color: #1a1612;
+  }
+  .cl-group ul { list-style: none; margin: 0; padding: 0; }
+  .cl-group li {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 12.5px; color: #3a3530; line-height: 1.55;
+    padding: 7px 0; border-bottom: 1px dotted #e0d8c8;
+  }
+  .cl-group li:last-child { border-bottom: none; }
+  .cl-group li strong { color: #1a1612; }
+  .cl-group li em { color: #8b4a2f; font-style: italic; }
+  .cl-box {
+    flex-shrink: 0; width: 16px; height: 16px;
+    border: 2px solid #b8924a; border-radius: 3px;
+    margin-top: 1px; background: #fff;
+  }
+  .cl-urgent { border-left: 4px solid #c0392b; }
+  .cl-soon { border-left: 4px solid #e67e22; }
+  .cl-few { border-left: 4px solid #d4ac0d; }
+  .cl-confirm { border-left: 4px solid #2e6da4; }
+  .cl-walkin { border-left: 4px solid #3a8a3a; }
+  .cl-tickets { border-left: 4px solid #7a5a8a; }
+
+</style>
+</head>
+<body>
+<div id="void"></div>
+<header>
+  <div class="trip-eyebrow">European Summer Vacation · 2026</div>
+  <h1>Booking &amp; Action<br><em>Checklist</em></h1>
+  <div class="trip-dates">August 7 – 23, 2026 &nbsp;·&nbsp; Everything to Reserve &amp; Arrange</div>
+  <div class="passengers">Cameron · Timothy · Laura Mertz</div>
+</header>
+
+<main>
+<div class="checklist-section">
+  <div class="checklist-header">
+    <h2>📋 Action &amp; Booking Checklist</h2>
+    <p>Everything you need to reserve, buy, or arrange — organized by urgency. Tap any item's day in the nav above for full details. Boxes are for your own tracking (print or check mentally).</p>
+  </div>
+
+  <div class="cl-group cl-urgent">
+    <h3>🔴 Book NOW — Timed Entry / Sells Out</h3>
+    <ul>
+      <li><span class="cl-box"></span><strong>The Last Supper + Milan Walking Tour</strong> (Aug 22) — ✅ ALREADY BOOKED (VEDITALIA / GetYourGuide, 9:30 AM)</li>
+      <li><span class="cl-box"></span><strong>Sagrada Família</strong> (Barcelona, Aug 14 visit) — timed entry, book well ahead at sagradafamilia.org · the Sat 8 PM vigil Mass is free/no ticket</li>
+      <li><span class="cl-box"></span><strong>Scrovegni Chapel</strong> (Padua, Aug 19) — ONLY IF you want it · mandatory timed slot, sells out weeks ahead · book a late-afternoon slot at cappelladegliscrovegni.it</li>
+      <li><span class="cl-box"></span><strong>St. Mark's Basilica</strong> (Venice, Aug 20) — attend the free 10 AM daily Mass (no ticket, enter Porta dei Fiori); book a timed visit ticket only if you want the paid museum areas</li>
+    </ul>
+  </div>
+
+  <div class="cl-group cl-tickets">
+    <h3>🎟️ Tickets to Buy (Transport &amp; Entry)</h3>
+    <ul>
+      <li><span class="cl-box"></span><strong>Cinque Terre ferry day pass</strong> (Aug 18) — NO need to buy ahead; sold at each harbour booth &amp; onboard. Optional: pre-buy online at navigazionegolfodeipoeti.it up to the day before. Skip the hiking Cinque Terre Card.</li>
+      <li><span class="cl-box"></span><strong>Cinque Terre parking</strong> (Aug 18) — Monterosso is the only convenient parking (Loreto or Fegina garages, ~€25/day); arrive by ~9 AM in August</li>
+      <li><span class="cl-box"></span><strong>Genoa sights</strong> (Aug 17) — NOTHING to pre-book. Three churches are free walk-in; the San Lorenzo Treasury is a small on-site ticket (closed Tuesdays; your Mon Aug 17 afternoon works)</li>
+      <li><span class="cl-box"></span><strong>Venice vaporetto pass</strong> (Aug 19–20) — 48-hr pass (~€40) if doing multiple boat rides</li>
+      <li><span class="cl-box"></span><strong>Genoa Cathedral Treasury</strong> (Aug 17) — small paid ticket, buy on site</li>
+      <li><span class="cl-box"></span><strong>Park Güell</strong> (Barcelona, Aug 14) — timed entry, parkguell.barcelona</li>
+      <li><span class="cl-box"></span><strong>Casa Batlló</strong> (Barcelona, Aug 14) — timed entry, casabatllo.es (or view facade free)</li>
+      <li><span class="cl-box"></span><strong>Museu Picasso</strong> (Barcelona, Aug 15) — timed entry, museupicasso.bcn.cat</li>
+      <li><span class="cl-box"></span><strong>Castello Sforzesco / Pietà</strong> (Milan, Aug 21) — ~€5, walk-up OK Fri; book milanocastello.it to skip the desk</li>
+      <li><span class="cl-box"></span><strong>Duomo Rooftop</strong> (Milan, Aug 22) — book lift ticket, duomomilano.it, 3 PM slot</li>
+      <li><span class="cl-box"></span><strong>La Seu Cathedral + Almudaina</strong> (Palma, Aug 11) — buy on site or online</li>
+    </ul>
+  </div>
+</div>
+</main>
+<footer>
+  Cameron Alexander · Timothy Scott · Laura Gerardette Mertz &nbsp;·&nbsp; United #BEWB7N<br>
+  European Summer Vacation &nbsp;·&nbsp; August 7 – 23, 2026 &nbsp;·&nbsp; Ad Majorem Dei Gloriam
+</footer>
+</body>
+</html>
